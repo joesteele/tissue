@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "net.joesteele.tissue.Tissue"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.squareup.okhttp:okhttp:+'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:+'
+    compile 'com.squareup.retrofit:retrofit:+'
+    compile 'com.netflix.rxjava:rxjava-core:+'
+    compile 'com.jakewharton.fliptables:fliptables:+'
+    compile 'net.sf.jopt-simple:jopt-simple:+'
+    compile 'org.apache.commons:commons-lang3:+'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'net.joesteele.tissue.Tissue'
+    }
+}
