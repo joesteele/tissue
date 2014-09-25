@@ -26,7 +26,7 @@ public class OptionsHelper {
     parser = new OptionParser();
 
     parser.acceptsAll(asList("l", "label"), "scope issues to comma-separated labels").withRequiredArg().ofType(String.class); // labels
-    parser.acceptsAll(asList("m", "milestone"), "show issues for a milestone").withRequiredArg().ofType(String.class); // milestone
+    parser.acceptsAll(asList("m", "milestone"), "usage: -m \"*<string>\" OR -m <number> - show issues for a milestone").withRequiredArg(); // milestone
     parser.acceptsAll(asList("u", "unscoped"), "unscoped; ignore project '.tissue' file"); // unscoped
     parser.acceptsAll(asList("a", "all"), "show all issues, both open and closed"); // all - open and closed
     parser.acceptsAll(asList("c", "closed"), "show only closed issues"); // closed issues
