@@ -1,36 +1,56 @@
-package net.joesteele.tissue;
+package net.joesteele.tissue.util;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import net.joesteele.tissue.Tissue;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 /**
  * Created by joesteele on 9/21/14.
  */
 public class OptionsHelper {
+  private static OptionParser parser;
+
+  static {
+    parser = new OptionParser();
+
+    parser.acceptsAll(asList("l", "label"), "scope issues to comma-separated labels").withRequiredArg().ofType(String.class); // labels
+    parser.acceptsAll(asList("m", "milestone"), "show issues for a milestone").withRequiredArg().ofType(String.class); // milestone
+    parser.acceptsAll(asList("u", "unscoped"), "unscoped; ignore project '.tissue' file"); // unscoped
+    parser.acceptsAll(asList("a", "all"), "show all issues, both open and closed"); // all - open and closed
+    parser.acceptsAll(asList("c", "closed"), "show only closed issues"); // closed issues
+    parser.acceptsAll(asList("mine"), "show issues assigned to you - requires $TISSUE_USERNAME to be set"); // mine - assigned to me
+    parser.accepts("limit", "limit returned results to <number>").withRequiredArg().ofType(Integer.class); // limit - limit returned results
+
+    parser.accepts("help", "show this help info").forHelp(); // help
+
+    TissueHelpFormatter helpFormatter = new TissueHelpFormatter();
+
+    helpFormatter.addCommand("help", "show this help info");
+    helpFormatter.addCommand("issue <number>, i <number>", "show the issue for the given <number>");
+    helpFormatter.addCommand("open <number>, o <number>", "open the issue page for the given <number> in the default browser");
+    helpFormatter.addCommand("new, n", "open the new issue page in the default browser");
+
+    parser.formatHelpWith(helpFormatter);
+  }
+
+  public static OptionParser parser() {
+    return parser;
+  }
+
   public static OptionSet parse(String[] args) {
-    OptionParser parser = new OptionParser();
-
-    parser.accepts("l").withRequiredArg(); // labels
-    parser.accepts("label").withRequiredArg(); // labels
-    parser.accepts("m").withRequiredArg(); // milestone
-    parser.accepts("milestone").withRequiredArg(); // milestone
-    parser.accepts("u"); // unscoped
-    parser.accepts("unscoped"); // unscoped
-    parser.accepts("a"); // all - open and closed
-    parser.accepts("all"); // all - open and closed
-    parser.accepts("c"); // closed issues
-    parser.accepts("closed"); // closed issues
-    parser.accepts("mine"); // mine - assigned to me
-    parser.accepts("limit").withRequiredArg().ofType(Integer.class); // limit - limit returned results
-
-    return parser.parse(args);
+    return parser().parse(args);
   }
 
   public static Map<String, Object> paramsFrom(OptionSet options) {
@@ -44,7 +64,7 @@ public class OptionsHelper {
 
     if (options.has("l") || options.has("label")) {
       Object value = options.has("l") ? options.valueOf("l") : options.valueOf("label");
-      labels.addAll(Arrays.asList(value.toString().split(",")));
+      labels.addAll(asList(value.toString().split(",")));
 
       labels = labels.stream()
         .map(String::trim)
@@ -84,7 +104,7 @@ public class OptionsHelper {
     try {
       File projectScoping = new File(System.getProperty("user.dir") + "/" + ".tissue");
       if (projectScoping.exists() && !projectScoping.isDirectory()) {
-        labels.addAll(Arrays.asList(new String(Files.readAllBytes(Paths.get(".tissue"))).split(",")));
+        labels.addAll(asList(new String(Files.readAllBytes(Paths.get(".tissue"))).split(",")));
       }
     } catch (IOException e) {
       System.out.println("Error reading project labels - leaving unscoped.");

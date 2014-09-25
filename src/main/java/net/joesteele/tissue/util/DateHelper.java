@@ -1,4 +1,4 @@
-package net.joesteele.tissue;
+package net.joesteele.tissue.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -6,6 +6,7 @@ import net.joesteele.tissue.models.Issue;
 import net.joesteele.tissue.presenters.IssuePresenter;
 import net.joesteele.tissue.presenters.IssuesPresenter;
 import net.joesteele.tissue.presenters.TablePresenter;
+import net.joesteele.tissue.util.OptionsHelper;
 import rx.Observable;
 
 import java.io.IOException;
@@ -55,22 +56,14 @@ public class Tissue {
 
       showIssue(args[1]);
     } else {
-      showIssues(args);
+      OptionSet options = OptionsHelper.parse(args);
+
+      if (options.has("help") || hasArgs && args[0].equals("help")) {
+        showHelp();
+      } else {
+        showIssues(options);
+      }
     }
-  }
-
-  private static Observable<List<Issue>> issuesWithOptions(String[] args) {
-    OptionSet options = OptionsHelper.parse(args);
-    Observable<List<Issue>> issues = GitHub.issues(owner, repo, OptionsHelper.paramsFrom(options));
-
-    if (options.has("limit")) {
-      return issues
-        .flatMap(Observable::from)
-        .take((int) options.valueOf("limit"))
-        .toList();
-    }
-
-    return issues;
   }
 
   private static void openNewIssue() throws IOException {
@@ -85,18 +78,36 @@ public class Tissue {
     exit();
   }
 
-  private static void showIssues(String[] args) {
-    issuesWithOptions(args)
-      .map(IssuesPresenter::new)
-      .finallyDo(Tissue::exit)
-      .subscribe(Tissue::printTable);
-  }
-
   private static void showIssue(String number) {
     GitHub.issue(owner, repo, Integer.valueOf(number))
       .map(IssuePresenter::new)
       .finallyDo(Tissue::exit)
       .subscribe(Tissue::printTable);
+  }
+
+  private static void showIssues(OptionSet options) {
+    issuesWithOptions(options)
+      .map(IssuesPresenter::new)
+      .finallyDo(Tissue::exit)
+      .subscribe(Tissue::printTable);
+  }
+
+  private static Observable<List<Issue>> issuesWithOptions(OptionSet options) {
+    Observable<List<Issue>> issues = GitHub.issues(owner, repo, OptionsHelper.paramsFrom(options));
+
+    if (options.has("limit")) {
+      return issues
+        .flatMap(Observable::from)
+        .take((int) options.valueOf("limit"))
+        .toList();
+    }
+
+    return issues;
+  }
+
+  private static void showHelp() throws IOException {
+    OptionsHelper.parser().printHelpOn(System.out);
+    exit();
   }
 
   private static void printTable(TablePresenter table) {

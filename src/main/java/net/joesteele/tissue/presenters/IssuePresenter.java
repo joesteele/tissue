@@ -1,7 +1,7 @@
 package net.joesteele.tissue.presenters;
 
 import com.jakewharton.fliptables.FlipTable;
-import net.joesteele.tissue.DateHelper;
+import net.joesteele.tissue.util.DateHelper;
 import net.joesteele.tissue.models.Issue;
 import org.apache.commons.lang3.text.WordUtils;
 

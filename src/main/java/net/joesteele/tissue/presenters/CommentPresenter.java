@@ -1,6 +1,6 @@
 package net.joesteele.tissue.presenters;
 
-import net.joesteele.tissue.DateHelper;
+import net.joesteele.tissue.util.DateHelper;
 import net.joesteele.tissue.models.Comment;
 import org.apache.commons.lang3.text.WordUtils;
 

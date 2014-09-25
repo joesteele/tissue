@@ -29,6 +29,7 @@ Available commands are:
 
 - `i <number>` or `issue <number>` - show an issue
 - `o <number>` or `open <number>` - open an issue in your browser
+- `new` or `n` - opens the new issue page in your browser
 
 
 ### Installing
